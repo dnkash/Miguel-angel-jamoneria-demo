@@ -45,13 +45,13 @@ export const productos = pgTable('productos', {
   creadoEn: timestamp('creado_en', { withTimezone: true }).defaultNow(),
 })
 
-export const suscriptores = pgTable('suscriptores', {
+export const demoSuscriptores = pgTable('demo_suscriptores', {
   id: serial('id').primaryKey(),
   email: text('email').notNull().unique(),
   creadoEn: timestamp('creado_en', { withTimezone: true }).defaultNow(),
 })
 
-export const preguntasIa = pgTable('preguntas_ia', {
+export const demoPreguntas = pgTable('demo_preguntas', {
   id: bigserial('id', { mode: 'number' }).primaryKey(),
   pregunta: text('pregunta').notNull(),
   respuestaChars: integer('respuesta_chars').notNull(),

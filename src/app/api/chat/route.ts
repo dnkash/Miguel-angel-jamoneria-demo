@@ -3,7 +3,7 @@ import { generateText, type ModelMessage } from 'ai'
 import { openrouter, FREE_MODEL } from '@/lib/ai'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { db } from '@/db'
-import { preguntasIa } from '@/db/schema'
+import { demoPreguntas } from '@/db/schema'
 import { PRODUCTOS } from '@/data/catalog'
 
 export const maxDuration = 60
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
 
     if (process.env.DATABASE_URL) {
       try {
-        await db.insert(preguntasIa).values({
+        await db.insert(demoPreguntas).values({
           pregunta: textoPregunta,
           respuestaChars: respuesta.length,
         })

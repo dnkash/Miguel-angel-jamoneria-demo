@@ -26,8 +26,10 @@ rate limit cae a memoria. El asistente necesita `OPENROUTER_API_KEY`.
 psql "$DATABASE_URL" -f src/db/schema.sql
 ```
 
-Crea `productos`, `suscriptores` y `preguntas`, e inserta los 12 productos.
-Es idempotente (`ON CONFLICT DO NOTHING`).
+Crea `categorias`, `productos` y las tablas propias de la demo
+(`demo_suscriptores`, `demo_preguntas`). Es idempotente (`ON CONFLICT DO NOTHING`).
+La demo solo lee el catálogo compartido: sus altas y preguntas van a tablas `demo_*`
+para no mezclarse con la web en producción.
 
 ## API
 

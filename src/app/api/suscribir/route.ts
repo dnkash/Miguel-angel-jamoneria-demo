@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/db'
-import { suscriptores } from '@/db/schema'
+import { demoSuscriptores } from '@/db/schema'
 import { checkRateLimit } from '@/lib/rate-limit'
 
 const emailSchema = z.object({
@@ -40,9 +40,9 @@ export async function POST(request: Request) {
   if (process.env.DATABASE_URL) {
     try {
       await db
-        .insert(suscriptores)
+        .insert(demoSuscriptores)
         .values({ email: parsed.data.email })
-        .onConflictDoNothing({ target: suscriptores.email })
+        .onConflictDoNothing({ target: demoSuscriptores.email })
     } catch (error) {
       console.error('[suscribir] No se pudo guardar en Neon:', error)
       return NextResponse.json(
