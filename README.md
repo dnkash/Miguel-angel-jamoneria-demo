@@ -4,6 +4,11 @@ Réplica funcional de https://miguel-angel-jamoneria.vercel.app/ con el mismo di
 pero servida por Next.js 16 y preparada para el stack gratuito: Vercel Hobby, Neon
 Postgres, Upstash Redis y OpenRouter (`:free`).
 
+- **Demo:** https://miguel-angel-jamoneria-demo.vercel.app
+- **Repo:** https://github.com/dnkash/Miguel-angel-jamoneria-demo
+
+Cada push a `main` despliega automáticamente en Vercel.
+
 ## Local
 
 ```bash

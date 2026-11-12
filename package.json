@@ -11,8 +11,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "db:push": "psql \"$DATABASE_URL\" -f src/db/schema.sql",
-    "db:seed": "psql \"$DATABASE_URL\" -f src/db/schema.sql"
+    "db:push": "node scripts/init-db.mjs",
+    "db:seed": "node scripts/init-db.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
