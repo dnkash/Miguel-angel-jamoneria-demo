@@ -233,7 +233,7 @@ export async function POST(request: Request) {
           model: openrouter(modelo),
           system: SYSTEM,
           messages,
-          maxOutputTokens: 1200,
+          maxOutputTokens: 2500,
           temperature: 0.5,
         })
         text = resultado.text.trim()
