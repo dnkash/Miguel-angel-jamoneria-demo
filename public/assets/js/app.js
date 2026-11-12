@@ -180,6 +180,22 @@
     guardar();
   }
 
+  function aplicarPedido(items) {
+    let added = 0;
+    items.forEach((item) => {
+      if (!porSlug(item.slug)) return;
+      const q = Math.max(1, Number(item.cantidad) || 1);
+      cart[item.slug] = (cart[item.slug] || 0) + q;
+      added += q;
+    });
+    if (!added) return false;
+    pintarCesta();
+    pintarContador(true);
+    cerrarChat();
+    abrirCesta(true);
+    return true;
+  }
+
   function abrirCesta(open) {
     drawer.classList.toggle("is-open", open);
     drawer.setAttribute("aria-hidden", String(!open));
@@ -466,6 +482,7 @@
   const log = $("#chatLog");
   const fab = $("#chatFab");
   let historial = [];
+  let sugerencias = [];
   let ocupado = false;
 
   function abrirChat(open, pregunta) {
@@ -527,16 +544,21 @@
       const r = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: historial.slice(-8) }),
+        body: JSON.stringify({ messages: historial.slice(-8), sugerencias }),
       });
       const d = await r.json().catch(() => ({}));
       escribiendo(false);
       if (!r.ok || !d.respuesta) {
         burbuja(d.error || "No he podido responder ahora mismo. Prueba otra vez.", "bot", "msg--err");
       } else {
+        if (Array.isArray(d.sugerencias)) sugerencias = d.sugerencias;
         burbuja(d.respuesta, "bot");
         historial.push({ role: "assistant", content: d.respuesta });
         if (historial.length > 8) historial = historial.slice(-8);
+        if (Array.isArray(d.items) && d.items.length) {
+          aplicarPedido(d.items);
+          sugerencias = [];
+        }
       }
     } catch (e) {
       escribiendo(false);

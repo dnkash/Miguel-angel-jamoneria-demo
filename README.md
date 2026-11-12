@@ -57,5 +57,5 @@ para no mezclarse con la web en producción.
 - `src/app/site.css` — sistema visual original copiado tal cual.
 - `public/assets/js/app.js` — interacción original (cesta, chat, filtros, precintos).
 - `public/assets/img/` — imágenes originales.
-- `src/data/catalog.ts` — 12 productos tipados y 4 categorías.
+- `src/data/catalog.ts` — 50 productos tipados y 4 categorías.
 - `src/db/schema.sql` — esquema + seed para Neon.
