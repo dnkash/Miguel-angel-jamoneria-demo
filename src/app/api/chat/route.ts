@@ -82,7 +82,7 @@ export async function POST(request: Request) {
       model: openrouter(FREE_MODEL),
       system: SYSTEM,
       messages,
-      maxOutputTokens: 700,
+      maxOutputTokens: 900,
       temperature: 0.5,
     })
 
