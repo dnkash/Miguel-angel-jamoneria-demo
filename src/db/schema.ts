@@ -71,6 +71,7 @@ export const demoPedidos = pgTable('demo_pedidos', {
   ciudad: text('ciudad'),
   codigoPostal: text('codigo_postal'),
   notas: text('notas'),
+  notaInterna: text('nota_interna'),
   subtotalCent: integer('subtotal_cent').notNull(),
   envioCent: integer('envio_cent').notNull().default(0),
   totalCent: integer('total_cent').notNull(),

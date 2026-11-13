@@ -1,0 +1,55 @@
+'use client'
+
+import { useState } from 'react'
+
+export function LoginForm() {
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const entrar = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      })
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(data.error || 'No se pudo entrar')
+      window.location.href = '/admin'
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo entrar')
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="admin-login">
+      <form className="admin-login__card" onSubmit={entrar}>
+        <p className="eyebrow">Panel interno · demo</p>
+        <h1>Entrar</h1>
+        <p>Acceso de demostración. No hay datos reales.</p>
+        <div className="field">
+          <label htmlFor="password">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="demo1234"
+            autoComplete="current-password"
+            required
+          />
+        </div>
+        {error && <p className="checkout__error">{error}</p>}
+        <button type="submit" className="btn btn--gold btn--full" disabled={loading}>
+          <span>{loading ? 'Entrando…' : 'Entrar'}</span>
+        </button>
+        <p className="admin-login__hint">Contraseña de demo: <b>demo1234</b></p>
+      </form>
+    </div>
+  )
+}

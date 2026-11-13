@@ -23,13 +23,13 @@ rate limit cae a memoria. El asistente necesita `OPENROUTER_API_KEY`.
 ## Base de datos (Neon, gratis)
 
 ```bash
-psql "$DATABASE_URL" -f src/db/schema.sql
+pnpm db:push
 ```
 
-Crea `categorias`, `productos` y las tablas propias de la demo
-(`demo_suscriptores`, `demo_preguntas`). Es idempotente (`ON CONFLICT DO NOTHING`).
-La demo solo lee el catálogo compartido: sus altas y preguntas van a tablas `demo_*`
-para no mezclarse con la web en producción.
+Crea `categorias`, `productos`, `demo_suscriptores`, `demo_preguntas`, `demo_pedidos`,
+`demo_pedido_lineas` y `demo_mensajes`. Es idempotente y no necesita `psql`.
+La demo solo lee el catálogo compartido: sus pedidos, altas y preguntas van a tablas
+`demo_*` para no mezclarse con la web en producción.
 
 ## API
 
@@ -39,14 +39,30 @@ para no mezclarse con la web en producción.
 | `POST /api/chat` | Asistente IA con catálogo, alérgenos y presupuesto. Rate limit 10/min. |
 | `POST /api/suscribir` | Guarda emails del club del ibérico en Neon. |
 | `GET /api/estado` | Nº de productos y preguntas para el footer. |
+| `POST /api/pedidos` | Crea un pedido demo, valida stock y precios en servidor. |
+| `GET /api/pedidos/[token]` | Seguimiento público por token. |
+| `POST /api/admin/login` | Login demo del panel interno. |
+| `PATCH /api/admin/pedidos/[id]` | Cambia estado, guarda nota y genera mensaje simulado. |
+| `POST /api/admin/reset-demo` | Borra pedidos demo y restaura stock. |
+
+## Pedidos y panel interno
+
+- Checkout en `/checkout`: datos de contacto, envío o recogida, tarjeta de prueba
+  (`4242 4242 4242 4242`) y pago simulado. No se cobra nada.
+- Seguimiento en `/pedido/[token]` con timeline de estados.
+- Panel en `/admin` con contraseña demo **`demo1234`** (configurable con
+  `ADMIN_PASSWORD` y `ADMIN_SESSION_SECRET`).
+- Desde el panel: resumen, pedidos, filtros, detalle, cambio de estado, nota interna,
+  hoja imprimible, bandeja de mensajes simulados y reset de la demo.
+- Los emails no se envían: se guardan en `demo_mensajes` para poder enseñar la bandeja.
 
 ## Carrito desde el asistente
 
 Cuando el cliente confirma (`sí`, `vale`, `añádelo`, `lo quiero`…), el asistente no
 responde con texto libre: `/api/chat` devuelve `items: [{ slug, cantidad }]` con la
 última recomendación, el cliente los añade a la cesta y abre el drawer automáticamente.
-El pedido se cierra con el botón de WhatsApp. Si la conversación incluye un presupuesto,
-no se añade ningún producto que lo supere.
+Desde la cesta, **Tramitar pedido** lleva al checkout demo. Si la conversación incluye
+un presupuesto, no se añade ningún producto que lo supere.
 
 ## Optimización free tier
 
@@ -62,8 +78,13 @@ no se añade ningún producto que lo supere.
 ## Estructura
 
 - `src/app/page.tsx` — landing completa (mismo HTML/estructura que la original).
-- `src/app/site.css` — sistema visual original copiado tal cual.
-- `public/assets/js/app.js` — interacción original (cesta, chat, filtros, precintos).
+- `src/app/site.css` — sistema visual original + checkout, seguimiento y panel.
+- `public/assets/js/app.js` — interacción de la tienda (cesta, chat, filtros, precintos).
 - `public/assets/img/` — imágenes originales.
 - `src/data/catalog.ts` — 50 productos tipados y 4 categorías.
+- `src/data/company.ts` — empresa, envío y estados ficticios de la demo.
+- `src/app/checkout/page.tsx` — checkout demo.
+- `src/app/pedido/[token]/page.tsx` — seguimiento público.
+- `src/app/admin/` — panel interno, pedidos, mensajes y login.
 - `src/db/schema.sql` — esquema + seed para Neon.
+- `scripts/init-db.mjs` — crea tablas y siembra el catálogo sin `psql`.

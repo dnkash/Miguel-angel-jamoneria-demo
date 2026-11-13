@@ -131,6 +131,7 @@ CREATE TABLE IF NOT EXISTS demo_pedidos (
   ciudad text,
   codigo_postal text,
   notas text,
+  nota_interna text,
   subtotal_cent integer NOT NULL,
   envio_cent integer NOT NULL DEFAULT 0,
   total_cent integer NOT NULL,
@@ -170,3 +171,5 @@ CREATE INDEX IF NOT EXISTS demo_pedidos_estado_idx ON demo_pedidos (estado);
 CREATE INDEX IF NOT EXISTS demo_pedidos_creado_idx ON demo_pedidos (creado_en DESC);
 CREATE INDEX IF NOT EXISTS demo_pedido_lineas_pedido_idx ON demo_pedido_lineas (pedido_id);
 CREATE INDEX IF NOT EXISTS demo_mensajes_pedido_idx ON demo_mensajes (pedido_id);
+
+ALTER TABLE demo_pedidos ADD COLUMN IF NOT EXISTS nota_interna text;
