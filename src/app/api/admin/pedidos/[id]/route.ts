@@ -3,7 +3,9 @@ import { eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/db'
 import { demoMensajes, demoPedidoLineas, demoPedidos, productos } from '@/db/schema'
-import { isAdmin } from '@/lib/admin-auth'
+import { getAdminSession } from '@/lib/admin-auth'
+import { puedeCancelar } from '@/lib/admin-roles'
+import { registrarAuditoria } from '@/lib/auditoria'
 import { COMPANY, ESTADO_LABEL, type EstadoPedido } from '@/data/company'
 
 const estados = ['pagado', 'preparando', 'listo', 'enviado', 'entregado', 'cancelado'] as const
@@ -60,7 +62,8 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  if (!(await isAdmin())) {
+  const session = await getAdminSession()
+  if (!session) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
 
@@ -80,6 +83,13 @@ export async function PATCH(
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: 'Datos no válidos' }, { status: 400 })
+  }
+
+  if (parsed.data.estado === 'cancelado' && !puedeCancelar(session.rol)) {
+    return NextResponse.json(
+      { error: 'Solo el encargado puede cancelar pedidos' },
+      { status: 403 }
+    )
   }
 
   const [pedido] = await db.select().from(demoPedidos).where(eq(demoPedidos.id, pedidoId))
@@ -132,6 +142,24 @@ export async function PATCH(
       destinatario: pedido.clienteEmail,
       asunto: plantilla.asunto,
       cuerpo: plantilla.cuerpo,
+    })
+
+    await registrarAuditoria({
+      usuario: session.username,
+      rol: session.rol,
+      accion: 'cambio_estado',
+      pedidoId: pedido.id,
+      detalle: `${pedido.estado} → ${parsed.data.estado}`,
+    })
+  }
+
+  if (parsed.data.notaInterna !== undefined) {
+    await registrarAuditoria({
+      usuario: session.username,
+      rol: session.rol,
+      accion: 'nota_interna',
+      pedidoId: pedido.id,
+      detalle: 'Nota interna actualizada',
     })
   }
 

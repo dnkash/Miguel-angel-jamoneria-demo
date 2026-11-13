@@ -172,4 +172,17 @@ CREATE INDEX IF NOT EXISTS demo_pedidos_creado_idx ON demo_pedidos (creado_en DE
 CREATE INDEX IF NOT EXISTS demo_pedido_lineas_pedido_idx ON demo_pedido_lineas (pedido_id);
 CREATE INDEX IF NOT EXISTS demo_mensajes_pedido_idx ON demo_mensajes (pedido_id);
 
+CREATE TABLE IF NOT EXISTS demo_auditoria (
+  id serial PRIMARY KEY,
+  usuario text NOT NULL,
+  rol text NOT NULL,
+  accion text NOT NULL,
+  pedido_id integer REFERENCES demo_pedidos(id) ON DELETE SET NULL,
+  detalle text,
+  creado_en timestamptz DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS demo_auditoria_pedido_idx ON demo_auditoria (pedido_id);
+CREATE INDEX IF NOT EXISTS demo_auditoria_creado_idx ON demo_auditoria (creado_en DESC);
+
 ALTER TABLE demo_pedidos ADD COLUMN IF NOT EXISTS nota_interna text;

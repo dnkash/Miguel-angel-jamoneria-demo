@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { ADMIN_COOKIE, ADMIN_MAX_AGE, checkPassword, createSessionToken } from '@/lib/admin-auth'
+import { ADMIN_COOKIE, ADMIN_MAX_AGE, authenticate, createSessionToken } from '@/lib/admin-auth'
 
 export async function POST(request: Request) {
   let body: unknown
@@ -9,16 +9,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'JSON no válido' }, { status: 400 })
   }
 
-  const password = typeof (body as { password?: unknown })?.password === 'string'
-    ? (body as { password: string }).password
-    : ''
+  const data = body as { username?: unknown; password?: unknown }
+  const username = typeof data?.username === 'string' ? data.username : ''
+  const password = typeof data?.password === 'string' ? data.password : ''
 
-  if (!checkPassword(password)) {
-    return NextResponse.json({ error: 'Contraseña incorrecta' }, { status: 401 })
+  const session = authenticate(username, password)
+  if (!session) {
+    return NextResponse.json({ error: 'Usuario o contraseña incorrectos' }, { status: 401 })
   }
 
-  const response = NextResponse.json({ ok: true })
-  response.cookies.set(ADMIN_COOKIE, createSessionToken(), {
+  const response = NextResponse.json({
+    ok: true,
+    usuario: session.username,
+    rol: session.rol,
+  })
+  response.cookies.set(ADMIN_COOKIE, createSessionToken(session), {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',

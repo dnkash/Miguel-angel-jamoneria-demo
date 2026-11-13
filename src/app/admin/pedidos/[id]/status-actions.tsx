@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ESTADO_LABEL, type EstadoPedido } from '@/data/company'
+import { puedeCancelar, type AdminRole } from '@/lib/admin-roles'
 
 const SIGUIENTES: Record<string, EstadoPedido[]> = {
   pagado: ['preparando', 'cancelado'],
@@ -13,7 +14,7 @@ const SIGUIENTES: Record<string, EstadoPedido[]> = {
   cancelado: [],
 }
 
-export function StatusActions({ pedidoId, estado }: { pedidoId: number; estado: string }) {
+export function StatusActions({ pedidoId, estado, rol }: { pedidoId: number; estado: string; rol: AdminRole }) {
   const router = useRouter()
   const [loading, setLoading] = useState('')
   const [error, setError] = useState('')
@@ -38,7 +39,9 @@ export function StatusActions({ pedidoId, estado }: { pedidoId: number; estado: 
     }
   }
 
-  const opciones = SIGUIENTES[estado] ?? []
+  const opciones = (SIGUIENTES[estado] ?? []).filter(
+    (opcion) => opcion !== 'cancelado' || puedeCancelar(rol)
+  )
 
   return (
     <div className="status-actions">

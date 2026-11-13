@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
-import { isAdmin } from '@/lib/admin-auth'
-import { getPedido } from '@/lib/admin-data'
+import { getAdminSession } from '@/lib/admin-auth'
+import { getAuditoriaPedido, getPedido } from '@/lib/admin-data'
 import { COMPANY, ESTADO_LABEL, type EstadoPedido } from '@/data/company'
 import { euros, fechaCorta } from '@/lib/format'
 import { StatusActions } from './status-actions'
@@ -15,15 +15,17 @@ export default async function PedidoAdminPage({
 }: {
   params: Promise<{ id: string }>
 }) {
-  if (!(await isAdmin())) redirect('/admin/login')
+  const session = await getAdminSession()
+  if (!session) redirect('/admin/login')
 
   const { id } = await params
   const pedidoId = Number(id)
   if (!Number.isInteger(pedidoId)) notFound()
 
   let data
+  let auditoria: Awaited<ReturnType<typeof getAuditoriaPedido>> = []
   try {
-    data = await getPedido(pedidoId)
+    ;[data, auditoria] = await Promise.all([getPedido(pedidoId), getAuditoriaPedido(pedidoId)])
   } catch (error) {
     console.error('[admin] Error cargando pedido:', error)
     return (
@@ -54,7 +56,7 @@ export default async function PedidoAdminPage({
 
       <div className="admin-card admin-acciones">
         <h2>Cambiar estado</h2>
-        <StatusActions pedidoId={pedido.id} estado={pedido.estado} />
+        <StatusActions pedidoId={pedido.id} estado={pedido.estado} rol={session.rol} />
       </div>
 
       <div className="admin__grid admin__grid--pedido">
@@ -122,6 +124,27 @@ export default async function PedidoAdminPage({
                   <small>{fechaCorta(mensaje.creadoEn)} · {mensaje.destinatario}</small>
                 </div>
                 <pre>{mensaje.cuerpo}</pre>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+      <section className="admin-card">
+        <h2>Historial de cambios</h2>
+        {auditoria.length === 0 ? (
+          <p className="admin-muted">Todavía no hay cambios registrados.</p>
+        ) : (
+          <ul className="admin-timeline">
+            {auditoria.map((registro) => (
+              <li key={registro.id}>
+                <span className={`role-badge role-badge--${registro.rol}`}>{registro.usuario}</span>
+                <p>
+                  {registro.accion === 'cambio_estado' && `Cambio de estado: ${registro.detalle}`}
+                  {registro.accion === 'nota_interna' && 'Nota interna actualizada'}
+                  {registro.accion === 'reset_demo' && `Reset de demo: ${registro.detalle}`}
+                  {!['cambio_estado', 'nota_interna', 'reset_demo'].includes(registro.accion) && registro.accion}
+                </p>
+                <time>{fechaCorta(registro.creadoEn)}</time>
               </li>
             ))}
           </ul>

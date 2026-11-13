@@ -1,6 +1,6 @@
 import { and, desc, eq, gte, ilike, inArray, or, sql } from 'drizzle-orm'
 import { db } from '@/db'
-import { demoMensajes, demoPedidoLineas, demoPedidos } from '@/db/schema'
+import { demoAuditoria, demoMensajes, demoPedidoLineas, demoPedidos, productos } from '@/db/schema'
 
 export type Pedido = typeof demoPedidos.$inferSelect
 export type LineaPedido = typeof demoPedidoLineas.$inferSelect
@@ -118,4 +118,58 @@ export async function getMensajes() {
     .leftJoin(demoPedidos, eq(demoMensajes.pedidoId, demoPedidos.id))
     .orderBy(desc(demoMensajes.creadoEn))
     .limit(100)
+}
+
+export async function getAuditoriaPedido(pedidoId: number) {
+  return db
+    .select()
+    .from(demoAuditoria)
+    .where(eq(demoAuditoria.pedidoId, pedidoId))
+    .orderBy(desc(demoAuditoria.creadoEn))
+    .limit(50)
+}
+
+export async function getActividadReciente(limit = 8) {
+  return db
+    .select({
+      id: demoAuditoria.id,
+      usuario: demoAuditoria.usuario,
+      rol: demoAuditoria.rol,
+      accion: demoAuditoria.accion,
+      pedidoId: demoAuditoria.pedidoId,
+      detalle: demoAuditoria.detalle,
+      creadoEn: demoAuditoria.creadoEn,
+      numero: demoPedidos.numero,
+    })
+    .from(demoAuditoria)
+    .leftJoin(demoPedidos, eq(demoAuditoria.pedidoId, demoPedidos.id))
+    .orderBy(desc(demoAuditoria.creadoEn))
+    .limit(limit)
+}
+
+export async function getStockBajo(limit = 6) {
+  return db
+    .select({
+      slug: productos.slug,
+      nombre: productos.nombre,
+      stock: productos.stock,
+    })
+    .from(productos)
+    .where(sql`${productos.stock} <= 10`)
+    .orderBy(productos.stock)
+    .limit(limit)
+}
+
+export async function getTopProductos(limit = 5) {
+  return db
+    .select({
+      nombre: demoPedidoLineas.nombre,
+      unidades: sql<number>`sum(${demoPedidoLineas.cantidad})::int`,
+    })
+    .from(demoPedidoLineas)
+    .innerJoin(demoPedidos, eq(demoPedidoLineas.pedidoId, demoPedidos.id))
+    .where(sql`${demoPedidos.estado} <> 'cancelado'`)
+    .groupBy(demoPedidoLineas.nombre)
+    .orderBy(sql`sum(${demoPedidoLineas.cantidad}) desc`)
+    .limit(limit)
 }

@@ -1,10 +1,10 @@
 import Link from 'next/link'
-import { isAdmin } from '@/lib/admin-auth'
+import { getAdminSession } from '@/lib/admin-auth'
 import { COMPANY } from '@/data/company'
 import { LogoutButton } from './logout-button'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const admin = await isAdmin()
+  const session = await getAdminSession()
 
   return (
     <div className="admin">
@@ -17,7 +17,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </span>
         </Link>
 
-        {admin && (
+        {session && (
           <nav className="admin__nav">
             <Link href="/admin">Resumen</Link>
             <Link href="/admin/pedidos">Pedidos</Link>
@@ -34,7 +34,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="admin__main">
         <header className="admin__top">
           <p>MODO DEMO · datos ficticios · sin cobros reales</p>
-          {admin ? <LogoutButton /> : <Link href="/admin/login" className="admin__link">Entrar</Link>}
+          {session ? (
+            <div className="admin__user">
+              <span className="admin__user-name">{session.nombre}</span>
+              <span className={`role-badge role-badge--${session.rol}`}>{session.rol}</span>
+              <LogoutButton />
+            </div>
+          ) : (
+            <Link href="/login" className="admin__link">Entrar</Link>
+          )}
         </header>
         {children}
       </div>

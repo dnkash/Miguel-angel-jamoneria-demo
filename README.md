@@ -50,9 +50,15 @@ La demo solo lee el catálogo compartido: sus pedidos, altas y preguntas van a t
 - Checkout en `/checkout`: datos de contacto, envío o recogida, tarjeta de prueba
   (`4242 4242 4242 4242`) y pago simulado. No se cobra nada.
 - Seguimiento en `/pedido/[token]` con timeline de estados.
-- Panel en `/admin` con contraseña demo **`demo1234`** (configurable con
-  `ADMIN_PASSWORD` y `ADMIN_SESSION_SECRET`). Los empleados pueden entrar desde
-  `/login` o desde el enlace **Acceso empleados** del pie de la tienda.
+- Panel en `/admin` con dos usuarios demo:
+  - **`empleado` / `empleado123`**: prepara pedidos y añade notas.
+  - **`encargado` / `encargado123`**: además puede cancelar pedidos y resetear la demo.
+  Los empleados pueden entrar desde `/login` o desde el enlace **Acceso empleados**
+  del pie de la tienda. Las claves se cambian con `EMPLEADO_PASSWORD` y
+  `ENCARGADO_PASSWORD`.
+- Cada cambio de estado, nota o reset queda registrado en `demo_auditoria` con
+  usuario, rol, pedido y fecha. Se ve en el detalle del pedido y en la actividad
+  reciente del resumen.
 - Desde el panel: resumen, pedidos, filtros, detalle, cambio de estado, nota interna,
   hoja imprimible, bandeja de mensajes simulados y reset de la demo.
 - Los emails no se envían: se guardan en `demo_mensajes` para poder enseñar la bandeja.

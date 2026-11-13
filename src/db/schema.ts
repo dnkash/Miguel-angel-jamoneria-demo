@@ -108,3 +108,13 @@ export const demoMensajes = pgTable('demo_mensajes', {
   cuerpo: text('cuerpo').notNull(),
   creadoEn: timestamp('creado_en', { withTimezone: true }).defaultNow(),
 })
+
+export const demoAuditoria = pgTable('demo_auditoria', {
+  id: serial('id').primaryKey(),
+  usuario: text('usuario').notNull(),
+  rol: text('rol').notNull(),
+  accion: text('accion').notNull(),
+  pedidoId: integer('pedido_id').references(() => demoPedidos.id, { onDelete: 'set null' }),
+  detalle: text('detalle'),
+  creadoEn: timestamp('creado_en', { withTimezone: true }).defaultNow(),
+})

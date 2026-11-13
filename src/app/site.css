@@ -793,3 +793,41 @@ body:has(.tracking) .header__actions .icon-btn{display:none}
   .admin-card p,.admin-card p b,.admin-table td,.admin-table td b,.admin-totales b,.admin-totales__total{color:#000!important}
   .admin-table th{color:#000;border-color:#999}
 }
+
+/* ═════════ USUARIOS Y AUDITORÍA ═════════ */
+.admin__user{display:flex;align-items:center;gap:.6rem}
+.admin__user-name{font-size:.72rem;color:var(--cream);letter-spacing:.05em}
+.role-badge{font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding:.2rem .45rem;border:1px solid var(--line);color:var(--txt-dim);white-space:nowrap}
+.role-badge--encargado{border-color:var(--gold);color:var(--gold-2)}
+.role-badge--empleado{border-color:#3f5f7a;color:#8fb8d6}
+.admin-login__accounts{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:1rem}
+.admin-login__accounts button{background:rgba(10,9,8,.65);border:1px solid var(--line);color:var(--txt-dim);padding:.6rem;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:.15rem;font-family:'Jost',sans-serif;transition:border-color .3s}
+.admin-login__accounts button:hover{border-color:var(--gold)}
+.admin-login__accounts b{font-size:.75rem;color:var(--cream);font-weight:400}
+.admin-login__accounts span{font-size:.68rem;color:var(--gold-deep)}
+.admin-lista{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem}
+.admin-lista li{display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid rgba(42,37,33,.6);padding-bottom:.5rem;font-size:.8rem;color:var(--txt-dim)}
+.admin-lista b{color:var(--cream);font-weight:400;white-space:nowrap}
+.admin-lista b.is-low{color:var(--err)}
+.admin-lista i{font-style:normal;color:var(--gold);margin-right:.2rem}
+.admin-activity ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.7rem}
+.admin-activity li{display:grid;grid-template-columns:90px 1fr auto;gap:.8rem;align-items:baseline;border-bottom:1px solid rgba(42,37,33,.6);padding-bottom:.6rem}
+.admin-activity p{font-size:.8rem;color:var(--txt-dim);margin:0}
+.admin-activity p a{color:var(--gold-2);text-decoration:none}
+.admin-activity time{font-size:.68rem;color:var(--txt-dim);white-space:nowrap}
+.admin-timeline{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.7rem}
+.admin-timeline li{display:grid;grid-template-columns:90px 1fr auto;gap:.8rem;align-items:baseline;border-left:1px solid var(--gold-deep);padding-left:.8rem}
+.admin-timeline p{font-size:.8rem;color:var(--txt-dim);margin:0}
+.admin-timeline time{font-size:.68rem;color:var(--txt-dim);white-space:nowrap}
+@media(max-width:700px){
+  .admin-activity li,.admin-timeline li{grid-template-columns:1fr;gap:.2rem}
+}
+
+/* ═════════ PULIDO VISUAL PANEL ═════════ */
+.admin-card{transition:border-color .3s ease}
+.admin-card:hover{border-color:rgba(201,168,106,.35)}
+.admin-stat{position:relative;overflow:hidden;transition:border-color .3s ease}
+.admin-stat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--gold),transparent);opacity:.55}
+.admin-stat:hover{border-color:rgba(201,168,106,.45)}
+.admin-lista li:last-child{border-bottom:0;padding-bottom:0}
+.admin-activity li:last-child{border-bottom:0;padding-bottom:0}

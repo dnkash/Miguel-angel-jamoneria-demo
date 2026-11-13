@@ -1,19 +1,41 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { isAdmin } from '@/lib/admin-auth'
-import { getResumen } from '@/lib/admin-data'
+import { getAdminSession } from '@/lib/admin-auth'
+import {
+  getActividadReciente,
+  getResumen,
+  getStockBajo,
+  getTopProductos,
+} from '@/lib/admin-data'
 import { ESTADO_LABEL, type EstadoPedido } from '@/data/company'
 import { euros, fechaCorta } from '@/lib/format'
 import { ResetButton } from './reset-button'
 
 export const dynamic = 'force-dynamic'
 
+function accionTexto(accion: string, detalle: string | null) {
+  if (accion === 'cambio_estado') return `cambió el estado: ${detalle ?? ''}`
+  if (accion === 'nota_interna') return 'actualizó una nota interna'
+  if (accion === 'reset_demo') return `reseteó la demo (${detalle ?? 'sin detalle'})`
+  return accion
+}
+
 export default async function AdminHome() {
-  if (!(await isAdmin())) redirect('/admin/login')
+  const session = await getAdminSession()
+  if (!session) redirect('/admin/login')
 
   let resumen
+  let actividad
+  let stockBajo
+  let topProductos
+
   try {
-    resumen = await getResumen()
+    ;[resumen, actividad, stockBajo, topProductos] = await Promise.all([
+      getResumen(),
+      getActividadReciente(8),
+      getStockBajo(6),
+      getTopProductos(5),
+    ])
   } catch (error) {
     console.error('[admin] Error cargando resumen:', error)
     return (
@@ -31,7 +53,11 @@ export default async function AdminHome() {
           <p className="eyebrow">Vista general</p>
           <h1>Resumen</h1>
         </div>
-        <ResetButton />
+        {session.rol === 'encargado' ? (
+          <ResetButton />
+        ) : (
+          <span className="admin-muted">Reset solo para encargado</span>
+        )}
       </div>
 
       <div className="admin__stats">
@@ -92,6 +118,64 @@ export default async function AdminHome() {
           <p className="admin-muted">Total histórico: {resumen.total} pedidos · {euros(resumen.ventasTotal)}</p>
         </section>
       </div>
+
+      <div className="admin__grid">
+        <section className="admin-card">
+          <h2>Stock bajo</h2>
+          {stockBajo.length === 0 ? (
+            <p className="admin-muted">Todo el catálogo está por encima de 10 unidades.</p>
+          ) : (
+            <ul className="admin-lista">
+              {stockBajo.map((producto) => (
+                <li key={producto.slug}>
+                  <span>{producto.nombre}</span>
+                  <b className={(producto.stock ?? 0) <= 5 ? 'is-low' : ''}>{producto.stock ?? 0} uds</b>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="admin-muted">Aviso visual para reponer antes de quedarte sin stock.</p>
+        </section>
+
+        <section className="admin-card">
+          <h2>Más vendidos</h2>
+          {topProductos.length === 0 ? (
+            <p className="admin-muted">Todavía no hay ventas registradas.</p>
+          ) : (
+            <ul className="admin-lista">
+              {topProductos.map((producto, index) => (
+                <li key={producto.nombre}>
+                  <span><i>{index + 1}.</i> {producto.nombre}</span>
+                  <b>{producto.unidades} uds</b>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="admin-muted">Calculado sobre pedidos no cancelados.</p>
+        </section>
+      </div>
+
+      <section className="admin-card admin-activity">
+        <h2>Actividad reciente</h2>
+        {actividad.length === 0 ? (
+          <p className="admin-muted">Todavía no hay acciones registradas.</p>
+        ) : (
+          <ul>
+            {actividad.map((registro) => (
+              <li key={registro.id}>
+                <span className={`role-badge role-badge--${registro.rol}`}>{registro.usuario}</span>
+                <p>
+                  {accionTexto(registro.accion, registro.detalle)}
+                  {registro.numero && (
+                    <> · <Link href={`/admin/pedidos/${registro.pedidoId}`}>{registro.numero}</Link></>
+                  )}
+                </p>
+                <time>{fechaCorta(registro.creadoEn)}</time>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   )
 }
