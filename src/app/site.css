@@ -785,10 +785,11 @@ body:has(.tracking) .header__actions .icon-btn{display:none}
 }
 @media print{
   body{background:#fff!important}
-  .demo-strip,.admin__side,.admin__top,.admin__head-actions,.status-actions,.admin-note,.admin__link,.admin__more{display:none!important}
+  .demo-strip,.admin__side,.admin__top,.admin__head-actions,.admin-acciones,.admin-card--note,.admin__link,.admin__more{display:none!important}
   .admin{display:block;background:#fff}
-  .admin__content{padding:0;max-width:none}
+  .admin__content{padding:0;max-width:none;color:#000}
+  .admin__head h1,.admin-card h2,.admin-card h3,.admin-muted,.admin-table td small,.admin-totales div{color:#000!important}
   .admin-card{border-color:#ccc;background:#fff;color:#000}
-  .admin-card h2,.admin-card p,.admin-card p b,.admin-table td,.admin-table td b,.admin-totales b,.admin-totales__total{color:#000!important}
+  .admin-card p,.admin-card p b,.admin-table td,.admin-table td b,.admin-totales b,.admin-totales__total{color:#000!important}
   .admin-table th{color:#000;border-color:#999}
 }

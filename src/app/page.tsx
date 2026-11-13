@@ -393,7 +393,7 @@ export default function Home() {
           <p>© <span id="year">2026</span> Miguel Ángel Jamonerías. Todos los derechos reservados.</p>
           <p className="footer__meta" id="footerMeta">Productos ibéricos desde 1988</p>
           <nav className="footer__legal">
-            <a href="#">Aviso legal</a><a href="#">Política de privacidad</a><a href="#">Política de cookies</a>
+            <a href="#">Aviso legal</a><a href="#">Política de privacidad</a><a href="#">Política de cookies</a><a href="/admin">Panel interno (demo)</a>
           </nav>
         </div>
       </footer>

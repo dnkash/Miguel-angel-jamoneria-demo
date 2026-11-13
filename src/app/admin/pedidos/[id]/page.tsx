@@ -102,7 +102,7 @@ export default async function PedidoAdminPage({
             <p>{pedido.pagoMetodo} · {pedido.pagoEstado}<br /><small>Simulado, sin cobro real.</small></p>
           </section>
 
-          <section className="admin-card">
+          <section className="admin-card admin-card--note">
             <h2>Nota interna</h2>
             <NoteForm pedidoId={pedido.id} nota={pedido.notaInterna} />
           </section>
