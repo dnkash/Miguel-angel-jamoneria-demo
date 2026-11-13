@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
 
 export function LoginForm() {
@@ -49,6 +50,7 @@ export function LoginForm() {
           <span>{loading ? 'Entrando…' : 'Entrar'}</span>
         </button>
         <p className="admin-login__hint">Contraseña de demo: <b>demo1234</b></p>
+        <p className="admin-login__hint"><Link href="/">← Volver a la tienda</Link></p>
       </form>
     </div>
   )

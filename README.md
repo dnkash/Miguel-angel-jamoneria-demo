@@ -51,7 +51,8 @@ La demo solo lee el catálogo compartido: sus pedidos, altas y preguntas van a t
   (`4242 4242 4242 4242`) y pago simulado. No se cobra nada.
 - Seguimiento en `/pedido/[token]` con timeline de estados.
 - Panel en `/admin` con contraseña demo **`demo1234`** (configurable con
-  `ADMIN_PASSWORD` y `ADMIN_SESSION_SECRET`).
+  `ADMIN_PASSWORD` y `ADMIN_SESSION_SECRET`). Los empleados pueden entrar desde
+  `/login` o desde el enlace **Acceso empleados** del pie de la tienda.
 - Desde el panel: resumen, pedidos, filtros, detalle, cambio de estado, nota interna,
   hoja imprimible, bandeja de mensajes simulados y reset de la demo.
 - Los emails no se envían: se guardan en `demo_mensajes` para poder enseñar la bandeja.
@@ -86,5 +87,6 @@ un presupuesto, no se añade ningún producto que lo supere.
 - `src/app/checkout/page.tsx` — checkout demo.
 - `src/app/pedido/[token]/page.tsx` — seguimiento público.
 - `src/app/admin/` — panel interno, pedidos, mensajes y login.
+- `src/app/login/page.tsx` — acceso de empleados desde la tienda.
 - `src/db/schema.sql` — esquema + seed para Neon.
 - `scripts/init-db.mjs` — crea tablas y siembra el catálogo sin `psql`.
