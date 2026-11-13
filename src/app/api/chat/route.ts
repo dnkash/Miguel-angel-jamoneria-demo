@@ -58,12 +58,20 @@ const norm = (value: string) =>
     .replace(/\s+/g, ' ')
     .trim()
 
-const NOMBRES = PRODUCTOS.map((p) => ({ slug: p.slug, nombre: norm(p.nombre) }))
+// Para comparar nombres de producto: ignora artículos y preposiciones
+// ("Queso Curado de Oveja de 500 g" == "Queso Curado de Oveja · 500 g").
+const normMatch = (value: string) =>
+  norm(value)
+    .replace(/\b(de|del|la|el|los|las|con|al|para|y)\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+const NOMBRES = PRODUCTOS.map((p) => ({ slug: p.slug, nombre: normMatch(p.nombre) }))
 
 const ALIASES: [string, string][] = (() => {
   const map = new Map<string, string[]>()
   for (const p of PRODUCTOS) {
-    const base = norm(p.nombre)
+    const base = normMatch(p.nombre)
     const variants = new Set([
       base.replace(/\b100%\b/g, '').replace(/\s+/g, ' ').trim(),
       base.replace(/\b50%\b/g, '').replace(/\s+/g, ' ').trim(),
@@ -79,7 +87,7 @@ const ALIASES: [string, string][] = (() => {
 })()
 
 function extraerSlugs(texto: string): string[] {
-  const t = norm(texto)
+  const t = normMatch(texto)
   if (!t) return []
   const exactos: string[] = []
   for (const { slug, nombre } of NOMBRES) {
@@ -261,6 +269,7 @@ export async function POST(request: Request) {
       respuesta = text.replace(marcador[0], '').trim()
     }
     if (sugerenciasTexto.length === 0) sugerenciasTexto = extraerSlugs(respuesta)
+    else sugerenciasTexto = [...new Set([...sugerenciasTexto, ...extraerSlugs(respuesta)])]
     const sugerencias = sugerenciasTexto.length ? sugerenciasTexto : sugerenciasPrevias
     let items: { slug: string; cantidad: number }[] = []
 
