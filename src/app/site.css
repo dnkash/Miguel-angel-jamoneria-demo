@@ -905,3 +905,13 @@ body:has(.tracking) .header__actions .icon-btn{display:none}
   .informe__total b{color:#000}
   .informe__nota{color:#555}
 }
+
+/* Acceso empleados en cabecera */
+.header__staff{
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;
+  color:var(--gold);border:1px solid rgba(201,168,106,.38);
+  padding:.45rem .7rem;text-decoration:none;white-space:nowrap;
+  transition:background .3s,color .3s,border-color .3s;
+}
+.header__staff:hover{background:var(--gold);color:#141008;border-color:var(--gold)}
+@media(max-width:760px){.header__staff{display:none}}

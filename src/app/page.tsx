@@ -28,6 +28,7 @@ export default function Home() {
             <a href="#nosotros">Nosotros</a>
           </nav>
           <div className="header__actions">
+            <a href="/login" className="header__staff">Empleados</a>
             <button className="icon-btn" id="openChat" aria-label="Abrir asistente con IA">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.8-.9L3 21l1.9-4.9A8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4Z" />
