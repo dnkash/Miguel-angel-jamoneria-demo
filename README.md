@@ -40,6 +40,14 @@ para no mezclarse con la web en producción.
 | `POST /api/suscribir` | Guarda emails del club del ibérico en Neon. |
 | `GET /api/estado` | Nº de productos y preguntas para el footer. |
 
+## Carrito desde el asistente
+
+Cuando el cliente confirma (`sí`, `vale`, `añádelo`, `lo quiero`…), el asistente no
+responde con texto libre: `/api/chat` devuelve `items: [{ slug, cantidad }]` con la
+última recomendación, el cliente los añade a la cesta y abre el drawer automáticamente.
+El pedido se cierra con el botón de WhatsApp. Si la conversación incluye un presupuesto,
+no se añade ningún producto que lo supere.
+
 ## Optimización free tier
 
 - Catálogo cacheado con `s-maxage=300` + `stale-while-revalidate`: Neon solo se
