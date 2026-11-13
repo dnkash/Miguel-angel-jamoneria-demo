@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {children}
-        <Script src="/assets/js/app.js?v=3" strategy="afterInteractive" />
+        <Script src="/assets/js/app.js?v=4" strategy="afterInteractive" />
       </body>
     </html>
   );

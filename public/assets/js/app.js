@@ -16,6 +16,8 @@
 
   /* ───────── estado ───────── */
   const state = { productos: [], categorias: [], filtro: null };
+  const acordeon = $("#catAccordion");
+  let catAbierta = null;
   const WA_NUMERO = "34600000000"; // ← sustituir por el número real del puesto
 
   /* ───────── reveal al hacer scroll ───────── */
@@ -295,6 +297,56 @@
       });
   }
 
+  function tarjetaAcordeon(p) {
+    const desc =
+      p.descripcion && p.descripcion.length > 170
+        ? p.descripcion.slice(0, 167).trim() + "…"
+        : p.descripcion || "";
+    return `<article class="cat-item">
+      <div>
+        <h4>${esc(p.nombre)}</h4>
+        <p>${esc(desc)}</p>
+        <span class="cat-item__meta">${esc(p.formato || "")} · ${money(p.precio_cent)}</span>
+      </div>
+      <button class="add-btn" data-add="${esc(p.slug)}" aria-label="Añadir ${esc(p.nombre)} a la cesta">
+        <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      </button>
+    </article>`;
+  }
+
+  function pintarAcordeon(slug) {
+    if (!acordeon) return;
+    const cat = state.categorias.find((c) => c.slug === slug);
+    const lista = state.productos.filter((p) => p.categoria_slug === slug);
+    acordeon.innerHTML = `<div class="cat-panel">
+      <div class="cat-panel__head">
+        <div>
+          <p>${lista.length} productos</p>
+          <h3>${esc(cat ? cat.nombre : slug)}</h3>
+        </div>
+        <button class="x-btn" data-cerrar-cat aria-label="Cerrar categoría">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="cat-panel__grid">${lista.map(tarjetaAcordeon).join("")}</div>
+    </div>`;
+    observar();
+  }
+
+  function cerrarAcordeon() {
+    catAbierta = null;
+    if (acordeon) acordeon.innerHTML = "";
+    $$("[data-cat]").forEach((x) => x.classList.remove("is-active"));
+  }
+
+  function actualizarContadoresCategorias() {
+    $$("[data-cat]").forEach((a) => {
+      const n = state.productos.filter((p) => p.categoria_slug === a.dataset.cat).length;
+      const go = a.querySelector(".cat-card__go");
+      if (go && go.firstChild) go.firstChild.textContent = `Ver ${n} productos `;
+    });
+  }
+
   function pintarTemporada() {
     const grid = $("#seasonGrid");
     const lista = state.productos.filter((p) => p.temporada).slice(0, 4);
@@ -397,6 +449,7 @@
       state.productos = data.productos;
       state.categorias = data.categorias || [];
       err.hidden = true;
+      actualizarContadoresCategorias();
       pintarEstrella();
       pintarTemporada();
       pintarOfertas();
@@ -430,16 +483,29 @@
     }, 1100);
   });
 
-  /* ───────── filtros de categoría ───────── */
+  /* ───────── acordeón de categorías ───────── */
   $$("[data-cat]").forEach((a) => {
     a.addEventListener("click", (ev) => {
       ev.preventDefault();
-      state.filtro = a.dataset.cat;
-      pintarEstrella();
-      const y = $("#estrella").getBoundingClientRect().top + window.scrollY - 90;
-      window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
+      const slug = a.dataset.cat;
+      if (catAbierta === slug) {
+        cerrarAcordeon();
+        return;
+      }
+      catAbierta = slug;
+      $$("[data-cat]").forEach((x) => x.classList.toggle("is-active", x === a));
+      pintarAcordeon(slug);
+      if (acordeon) {
+        const y = acordeon.getBoundingClientRect().top + window.scrollY - 100;
+        window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
+      }
     });
   });
+  if (acordeon) {
+    acordeon.addEventListener("click", (e) => {
+      if (e.target.closest("[data-cerrar-cat]")) cerrarAcordeon();
+    });
+  }
 
   /* ───────── newsletter ───────── */
   $("#newsForm").addEventListener("submit", async (e) => {

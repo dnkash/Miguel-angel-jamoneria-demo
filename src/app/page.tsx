@@ -190,6 +190,7 @@ export default function Home() {
                 </div>
               </a>
             </div>
+            <div className="cat-accordion" id="catAccordion" aria-live="polite" />
           </div>
         </section>
 
@@ -277,7 +278,7 @@ export default function Home() {
           <div className="shell historia__grid">
             <figure className="historia__media reveal">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="assets/img/mercado.jpg" alt="Fachada del Mercado de Abastos de Salamanca" loading="lazy" />
+              <img src="assets/img/mercado.jpg" alt="Puerta del Mercado de Abastos de Salamanca" loading="lazy" />
               <figcaption>Mercado Central de Abastos · Salamanca</figcaption>
             </figure>
             <div className="historia__copy reveal" style={delay(".12s")}>
