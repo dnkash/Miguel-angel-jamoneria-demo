@@ -674,6 +674,8 @@ section[id]{scroll-margin-top:86px}
 .drawer__last a span{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--txt-dim)}
 .drawer__last a b{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--cream)}
 .drawer__last a i{font-style:normal;font-size:.72rem;color:var(--gold)}
+body:has(.checkout) .header__actions .icon-btn,
+body:has(.tracking) .header__actions .icon-btn{display:none}
 
 @media(max-width:900px){
   .checkout__grid,.tracking__grid{grid-template-columns:1fr}
