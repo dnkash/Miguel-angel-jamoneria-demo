@@ -36,7 +36,21 @@ export default async function PedidosPage({
           <p className="eyebrow">Operación</p>
           <h1>Pedidos</h1>
         </div>
-        <span className="admin-muted">{pedidos.length} resultados</span>
+        <div className="admin__head-actions">
+          <span className="admin-muted">{pedidos.length} resultados</span>
+          <a
+            href={`/api/admin/export/pedidos?${new URLSearchParams({ estado, q }).toString()}`}
+            className="btn btn--outline btn--sm"
+          >
+            <span>Exportar CSV</span>
+          </a>
+          <Link
+            href={`/admin/pedidos/informe?${new URLSearchParams({ estado, q }).toString()}`}
+            className="btn btn--outline btn--sm"
+          >
+            <span>Informe PDF</span>
+          </Link>
+        </div>
       </div>
 
       <form className="admin-filtros" method="get">

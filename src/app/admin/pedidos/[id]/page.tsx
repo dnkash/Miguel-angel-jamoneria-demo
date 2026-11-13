@@ -50,6 +50,9 @@ export default async function PedidoAdminPage({
         </div>
         <div className="admin__head-actions">
           <span className={`badge badge--${pedido.estado}`}>{ESTADO_LABEL[estado] ?? pedido.estado}</span>
+          <Link href={`/admin/pedidos/${pedido.id}/etiqueta`} className="btn btn--outline btn--sm">
+            <span>Etiqueta QR</span>
+          </Link>
           <PrintButton />
         </div>
       </div>
@@ -142,7 +145,8 @@ export default async function PedidoAdminPage({
                   {registro.accion === 'cambio_estado' && `Cambio de estado: ${registro.detalle}`}
                   {registro.accion === 'nota_interna' && 'Nota interna actualizada'}
                   {registro.accion === 'reset_demo' && `Reset de demo: ${registro.detalle}`}
-                  {!['cambio_estado', 'nota_interna', 'reset_demo'].includes(registro.accion) && registro.accion}
+                  {registro.accion === 'ajuste_stock' && `Ajuste de stock: ${registro.detalle}`}
+                  {!['cambio_estado', 'nota_interna', 'reset_demo', 'ajuste_stock'].includes(registro.accion) && registro.accion}
                 </p>
                 <time>{fechaCorta(registro.creadoEn)}</time>
               </li>

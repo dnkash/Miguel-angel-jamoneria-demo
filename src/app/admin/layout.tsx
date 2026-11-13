@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getAdminSession } from '@/lib/admin-auth'
 import { COMPANY } from '@/data/company'
 import { LogoutButton } from './logout-button'
+import { AdminNotifications } from './notifications'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getAdminSession()
@@ -21,6 +22,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <nav className="admin__nav">
             <Link href="/admin">Resumen</Link>
             <Link href="/admin/pedidos">Pedidos</Link>
+            <Link href="/admin/stock">Stock</Link>
             <Link href="/admin/mensajes">Mensajes</Link>
           </nav>
         )}
@@ -36,6 +38,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <p>MODO DEMO · datos ficticios · sin cobros reales</p>
           {session ? (
             <div className="admin__user">
+              <AdminNotifications />
               <span className="admin__user-name">{session.nombre}</span>
               <span className={`role-badge role-badge--${session.rol}`}>{session.rol}</span>
               <LogoutButton />

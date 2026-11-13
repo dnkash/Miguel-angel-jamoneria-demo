@@ -6,6 +6,7 @@ import {
   getResumen,
   getStockBajo,
   getTopProductos,
+  getVentasSemana,
 } from '@/lib/admin-data'
 import { ESTADO_LABEL, type EstadoPedido } from '@/data/company'
 import { euros, fechaCorta } from '@/lib/format'
@@ -17,6 +18,7 @@ function accionTexto(accion: string, detalle: string | null) {
   if (accion === 'cambio_estado') return `cambió el estado: ${detalle ?? ''}`
   if (accion === 'nota_interna') return 'actualizó una nota interna'
   if (accion === 'reset_demo') return `reseteó la demo (${detalle ?? 'sin detalle'})`
+  if (accion === 'ajuste_stock') return `ajustó stock: ${detalle ?? ''}`
   return accion
 }
 
@@ -28,13 +30,15 @@ export default async function AdminHome() {
   let actividad
   let stockBajo
   let topProductos
+  let semana
 
   try {
-    ;[resumen, actividad, stockBajo, topProductos] = await Promise.all([
+    ;[resumen, actividad, stockBajo, topProductos, semana] = await Promise.all([
       getResumen(),
       getActividadReciente(8),
       getStockBajo(6),
       getTopProductos(5),
+      getVentasSemana(),
     ])
   } catch (error) {
     console.error('[admin] Error cargando resumen:', error)
@@ -78,6 +82,30 @@ export default async function AdminHome() {
           <b>{euros(resumen.ticketMedio)}</b>
         </article>
       </div>
+
+      <section className="admin-card admin-chart">
+        <div className="admin-chart__head">
+          <h2>Ventas últimos 7 días</h2>
+          <span>{euros(semana.total)} · {semana.pedidos} pedidos</span>
+        </div>
+        <div className="chart" role="img" aria-label="Ventas de los últimos siete días">
+          {semana.dias.map((dia) => {
+            const max = Math.max(1, ...semana.dias.map((d) => d.total))
+            return (
+              <div className="chart__col" key={dia.fecha}>
+                <div className="chart__track">
+                  <div
+                    className={`chart__bar ${dia.total === 0 ? 'is-empty' : ''}`}
+                    style={{ height: `${dia.total === 0 ? 3 : Math.max(6, (dia.total / max) * 100)}%` }}
+                    title={`${dia.label}: ${euros(dia.total)} · ${dia.pedidos} pedidos`}
+                  />
+                </div>
+                <small>{dia.label}</small>
+              </div>
+            )
+          })}
+        </div>
+      </section>
 
       <div className="admin__grid">
         <section className="admin-card">

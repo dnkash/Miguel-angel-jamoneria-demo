@@ -61,6 +61,13 @@ La demo solo lee el catálogo compartido: sus pedidos, altas y preguntas van a t
   reciente del resumen.
 - Desde el panel: resumen, pedidos, filtros, detalle, cambio de estado, nota interna,
   hoja imprimible, bandeja de mensajes simulados y reset de la demo.
+- **Avisos de pedido nuevo** en la cabecera (campana, contador y sonido), con polling
+  cada 20 s y acceso directo al pedido.
+- **Stock editable** desde `/admin/stock`, con aviso de stock bajo y registro en auditoría.
+- **Exportación CSV** y **informe imprimible/PDF** de pedidos desde `/admin/pedidos`.
+- **Gráfica de ventas de los últimos 7 días** en el resumen.
+- **Etiqueta de envío con QR** en `/admin/pedidos/[id]/etiqueta`; el QR abre el
+  seguimiento público del pedido.
 - Los emails no se envían: se guardan en `demo_mensajes` para poder enseñar la bandeja.
 
 ## Carrito desde el asistente

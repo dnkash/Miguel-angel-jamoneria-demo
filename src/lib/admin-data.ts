@@ -173,3 +173,49 @@ export async function getTopProductos(limit = 5) {
     .orderBy(sql`sum(${demoPedidoLineas.cantidad}) desc`)
     .limit(limit)
 }
+
+export async function getProductos() {
+  return db
+    .select({
+      id: productos.id,
+      slug: productos.slug,
+      nombre: productos.nombre,
+      precioCent: productos.precioCent,
+      stock: productos.stock,
+    })
+    .from(productos)
+    .orderBy(productos.nombre)
+}
+
+export async function getVentasSemana() {
+  const filas = await db
+    .select({
+      dia: sql<string>`to_char(date_trunc('day', ${demoPedidos.creadoEn}), 'YYYY-MM-DD')`,
+      total: sql<number>`coalesce(sum(${demoPedidos.totalCent}), 0)::int`,
+      pedidos: sql<number>`count(*)::int`,
+    })
+    .from(demoPedidos)
+    .where(sql`${demoPedidos.estado} <> 'cancelado' and ${demoPedidos.creadoEn} >= now() - interval '6 days'`)
+    .groupBy(sql`date_trunc('day', ${demoPedidos.creadoEn})`)
+    .orderBy(sql`date_trunc('day', ${demoPedidos.creadoEn})`)
+
+  const dias = Array.from({ length: 7 }, (_, index) => {
+    const fecha = new Date()
+    fecha.setHours(0, 0, 0, 0)
+    fecha.setDate(fecha.getDate() - (6 - index))
+    const key = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`
+    const fila = filas.find((f) => f.dia === key)
+    return {
+      fecha: key,
+      label: `${String(fecha.getDate()).padStart(2, '0')}/${String(fecha.getMonth() + 1).padStart(2, '0')}`,
+      total: fila?.total ?? 0,
+      pedidos: fila?.pedidos ?? 0,
+    }
+  })
+
+  return {
+    dias,
+    total: dias.reduce((suma, dia) => suma + dia.total, 0),
+    pedidos: dias.reduce((suma, dia) => suma + dia.pedidos, 0),
+  }
+}
