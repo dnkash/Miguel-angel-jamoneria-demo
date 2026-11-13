@@ -184,7 +184,7 @@ export async function getProductos() {
       stock: productos.stock,
     })
     .from(productos)
-    .orderBy(productos.nombre)
+    .orderBy(sql`${productos.stock} asc nulls last`, productos.nombre)
 }
 
 export async function getVentasSemana() {

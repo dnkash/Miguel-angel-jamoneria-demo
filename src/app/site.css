@@ -915,3 +915,18 @@ body:has(.tracking) .header__actions .icon-btn{display:none}
 }
 .header__staff:hover{background:var(--gold);color:#141008;border-color:var(--gold)}
 @media(max-width:760px){.header__staff{display:none}}
+
+/* ═════════ STOCK: AVISOS Y ORDEN ═════════ */
+.stock__resumen{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;font-size:.72rem}
+.stock__resumen span{border:1px solid var(--line);padding:.35rem .6rem;color:var(--txt-dim)}
+.stock__resumen .is-critical{color:#e06a5a;border-color:rgba(224,106,90,.55)}
+.stock__resumen .is-warning{color:#e0a24a;border-color:rgba(224,162,74,.55)}
+.stock__table tr.is-critical td{background:rgba(180,60,50,.10)}
+.stock__table tr.is-warning td{background:rgba(224,162,74,.07)}
+.stock__table tr.is-critical td:first-child{box-shadow:inset 2px 0 0 #c0392b}
+.stock__table tr.is-warning td:first-child{box-shadow:inset 2px 0 0 #c98a2e}
+.stock__table input.is-critical{border-color:#c0392b;color:#e06a5a}
+.stock__table input.is-warning{border-color:#c98a2e;color:#e0a24a}
+.stock__badge{display:inline-block;font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;padding:.22rem .45rem;border:1px solid var(--line);color:var(--txt-dim);white-space:nowrap}
+.stock__badge.is-critical{color:#e06a5a;border-color:rgba(224,106,90,.6)}
+.stock__badge.is-warning{color:#e0a24a;border-color:rgba(224,162,74,.6)}

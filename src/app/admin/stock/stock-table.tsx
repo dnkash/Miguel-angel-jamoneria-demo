@@ -26,6 +26,18 @@ export function StockTable({ productos }: { productos: Producto[] }) {
     )
   }, [filas, filtro])
 
+  const criticos = filas.filter((p) => (p.stock ?? 0) <= 10).length
+  const bajos = filas.filter((p) => {
+    const stock = p.stock ?? 0
+    return stock > 10 && stock <= 20
+  }).length
+
+  const nivel = (stock: number) => {
+    if (stock <= 10) return 'is-critical'
+    if (stock <= 20) return 'is-warning'
+    return ''
+  }
+
   const cambiar = (slug: string, valor: string) => {
     const stock = valor === '' ? 0 : Number(valor)
     setFilas((prev) => prev.map((p) => (p.slug === slug ? { ...p, stock } : p)))
@@ -45,6 +57,11 @@ export function StockTable({ productos }: { productos: Producto[] }) {
       const data = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(data.error || 'No se pudo guardar')
       setGuardado(producto.slug)
+      setFilas((prev) =>
+        [...prev].sort(
+          (a, b) => (a.stock ?? 0) - (b.stock ?? 0) || a.nombre.localeCompare(b.nombre)
+        )
+      )
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se pudo guardar')
     } finally {
@@ -54,6 +71,12 @@ export function StockTable({ productos }: { productos: Producto[] }) {
 
   return (
     <div className="stock">
+      <div className="stock__resumen">
+        <span className="is-critical">{criticos} en crítico (≤10)</span>
+        <span className="is-warning">{bajos} bajo stock (11–20)</span>
+        <span>{filas.length} productos</span>
+      </div>
+
       <div className="stock__filtro">
         <input
           value={filtro}
@@ -72,14 +95,16 @@ export function StockTable({ productos }: { productos: Producto[] }) {
               <th>Producto</th>
               <th>Precio</th>
               <th>Stock</th>
+              <th>Estado</th>
               <th />
             </tr>
           </thead>
           <tbody>
             {visibles.map((producto) => {
               const stock = producto.stock ?? 0
+              const estado = nivel(stock)
               return (
-                <tr key={producto.slug}>
+                <tr key={producto.slug} className={estado}>
                   <td>
                     {producto.nombre}
                     <small>{producto.slug}</small>
@@ -92,9 +117,14 @@ export function StockTable({ productos }: { productos: Producto[] }) {
                       max={99999}
                       value={stock}
                       onChange={(e) => cambiar(producto.slug, e.target.value)}
-                      className={stock <= 5 ? 'is-low' : stock <= 10 ? 'is-warn' : ''}
+                      className={estado}
                       aria-label={`Stock de ${producto.nombre}`}
                     />
+                  </td>
+                  <td>
+                    <span className={`stock__badge ${estado}`}>
+                      {estado === 'is-critical' ? 'Crítico' : estado === 'is-warning' ? 'Bajo' : 'OK'}
+                    </span>
                   </td>
                   <td>
                     <button
