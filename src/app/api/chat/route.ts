@@ -186,7 +186,8 @@ export async function POST(request: Request) {
     const delHistorial = messages
       .filter((m) => m.role === 'assistant' && typeof m.content === 'string')
       .flatMap((m) => extraerSlugs(m.content as string))
-    const items = construirPedido([...delUsuario, ...sugerenciasPrevias, ...delHistorial], presupuestoCent)
+    const base = sugerenciasPrevias.length > 0 ? sugerenciasPrevias : delHistorial
+    const items = construirPedido([...delUsuario, ...base], presupuestoCent)
 
     if (items.length > 0) {
       const detalle = items
