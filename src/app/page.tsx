@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Script from "next/script";
 
 const delay = (value: string) => ({ "--d": value }) as CSSProperties;
 
@@ -411,8 +412,9 @@ export default function Home() {
         <footer className="drawer__foot">
           <div className="drawer__row"><span>Subtotal</span><b id="cartSubtotal">0,00 €</b></div>
           <p className="drawer__nota" id="cartEnvio">Envío gratis a partir de 90 €</p>
-          <button className="btn btn--gold btn--full" id="checkout"><span>Enviar pedido por WhatsApp</span></button>
-          <p className="drawer__fine">Pedido sin compromiso: confirmamos disponibilidad y pago contigo.</p>
+          <div className="drawer__last" id="lastOrder" hidden />
+          <button className="btn btn--gold btn--full" id="checkout"><span>Tramitar pedido</span></button>
+          <p className="drawer__fine">Pago simulado en la demo: no se cobra nada.</p>
         </footer>
       </aside>
 
@@ -458,6 +460,8 @@ export default function Home() {
         </form>
         <p className="chat__legal">Respuestas generadas por IA a partir de nuestro catálogo. Para alérgenos, prevalece el etiquetado del envase.</p>
       </section>
+
+      <Script src="/assets/js/app.js?v=5" strategy="afterInteractive" />
     </>
   );
 }

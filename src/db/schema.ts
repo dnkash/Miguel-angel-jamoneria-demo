@@ -57,3 +57,53 @@ export const demoPreguntas = pgTable('demo_preguntas', {
   respuestaChars: integer('respuesta_chars').notNull(),
   creadoEn: timestamp('creado_en', { withTimezone: true }).defaultNow(),
 })
+
+export const demoPedidos = pgTable('demo_pedidos', {
+  id: serial('id').primaryKey(),
+  numero: text('numero').notNull().unique(),
+  token: text('token').notNull().unique(),
+  estado: text('estado').notNull().default('pagado'),
+  clienteNombre: text('cliente_nombre').notNull(),
+  clienteEmail: text('cliente_email').notNull(),
+  clienteTelefono: text('cliente_telefono'),
+  entregaTipo: text('entrega_tipo').notNull().default('envio'),
+  direccion: text('direccion'),
+  ciudad: text('ciudad'),
+  codigoPostal: text('codigo_postal'),
+  notas: text('notas'),
+  subtotalCent: integer('subtotal_cent').notNull(),
+  envioCent: integer('envio_cent').notNull().default(0),
+  totalCent: integer('total_cent').notNull(),
+  pagoMetodo: text('pago_metodo').notNull().default('demo'),
+  pagoEstado: text('pago_estado').notNull().default('simulado'),
+  creadoEn: timestamp('creado_en', { withTimezone: true }).defaultNow(),
+  actualizadoEn: timestamp('actualizado_en', { withTimezone: true }).defaultNow(),
+  preparadoEn: timestamp('preparado_en', { withTimezone: true }),
+  listoEn: timestamp('listo_en', { withTimezone: true }),
+  enviadoEn: timestamp('enviado_en', { withTimezone: true }),
+  entregadoEn: timestamp('entregado_en', { withTimezone: true }),
+  canceladoEn: timestamp('cancelado_en', { withTimezone: true }),
+})
+
+export const demoPedidoLineas = pgTable('demo_pedido_lineas', {
+  id: serial('id').primaryKey(),
+  pedidoId: integer('pedido_id')
+    .notNull()
+    .references(() => demoPedidos.id, { onDelete: 'cascade' }),
+  productoSlug: text('producto_slug').notNull(),
+  nombre: text('nombre').notNull(),
+  precioCent: integer('precio_cent').notNull(),
+  cantidad: integer('cantidad').notNull(),
+  subtotalCent: integer('subtotal_cent').notNull(),
+  alergenos: text('alergenos').array().default([]),
+})
+
+export const demoMensajes = pgTable('demo_mensajes', {
+  id: serial('id').primaryKey(),
+  pedidoId: integer('pedido_id').references(() => demoPedidos.id, { onDelete: 'cascade' }),
+  tipo: text('tipo').notNull().default('email'),
+  destinatario: text('destinatario'),
+  asunto: text('asunto').notNull(),
+  cuerpo: text('cuerpo').notNull(),
+  creadoEn: timestamp('creado_en', { withTimezone: true }).defaultNow(),
+})

@@ -116,3 +116,57 @@ INSERT INTO productos (slug, nombre, categoria_id, descripcion, precio_cent, pre
 ('pack-gourmet-6', 'Pack Gourmet para 6', 4, 'Caja regalo con jamón de bellota loncheado, lomo, chorizo, salchichón, queso curado, aceite y pan. Presentación con lazo.', 8990, 9990, 'Caja para 6 personas', NULL, '{sulfitos,leche,lactosa,gluten}'::text[], 'Selección de ibéricos, queso, aceite y pan.', 'Cena completa; tinto de Ribera.', 6, 6, 'assets/img/tabla.jpg', true, 'Ideal para regalo navideño', true, '2026-12-31T23:59:59', true, 5.0, 112, 18, true),
 ('pack-cena-2', 'Pack Cena para 2', 4, 'Cena resuelta: 100 g de jamón de bellota, 100 g de lomo, queso curado, aceitunas y pan. Todo listo para servir.', 3490, NULL, 'Caja para 2 personas', NULL, '{sulfitos,leche,lactosa,gluten}'::text[], 'Jamón, lomo, queso, aceitunas y pan.', 'Una copa de tinto o cava.', 2, 2, 'assets/img/tabla.jpg', false, NULL, false, NULL, false, 4.9, 74, 28, true)
 ON CONFLICT (slug) DO NOTHING;
+
+-- ═════════ PEDIDOS DEMO ═════════
+CREATE TABLE IF NOT EXISTS demo_pedidos (
+  id serial PRIMARY KEY,
+  numero text UNIQUE NOT NULL,
+  token text UNIQUE NOT NULL,
+  estado text NOT NULL DEFAULT 'pagado',
+  cliente_nombre text NOT NULL,
+  cliente_email text NOT NULL,
+  cliente_telefono text,
+  entrega_tipo text NOT NULL DEFAULT 'envio',
+  direccion text,
+  ciudad text,
+  codigo_postal text,
+  notas text,
+  subtotal_cent integer NOT NULL,
+  envio_cent integer NOT NULL DEFAULT 0,
+  total_cent integer NOT NULL,
+  pago_metodo text NOT NULL DEFAULT 'demo',
+  pago_estado text NOT NULL DEFAULT 'simulado',
+  creado_en timestamptz DEFAULT now(),
+  actualizado_en timestamptz DEFAULT now(),
+  preparado_en timestamptz,
+  listo_en timestamptz,
+  enviado_en timestamptz,
+  entregado_en timestamptz,
+  cancelado_en timestamptz
+);
+
+CREATE TABLE IF NOT EXISTS demo_pedido_lineas (
+  id serial PRIMARY KEY,
+  pedido_id integer NOT NULL REFERENCES demo_pedidos(id) ON DELETE CASCADE,
+  producto_slug text NOT NULL,
+  nombre text NOT NULL,
+  precio_cent integer NOT NULL,
+  cantidad integer NOT NULL,
+  subtotal_cent integer NOT NULL,
+  alergenos text[] DEFAULT '{}'::text[]
+);
+
+CREATE TABLE IF NOT EXISTS demo_mensajes (
+  id serial PRIMARY KEY,
+  pedido_id integer REFERENCES demo_pedidos(id) ON DELETE CASCADE,
+  tipo text NOT NULL DEFAULT 'email',
+  destinatario text,
+  asunto text NOT NULL,
+  cuerpo text NOT NULL,
+  creado_en timestamptz DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS demo_pedidos_estado_idx ON demo_pedidos (estado);
+CREATE INDEX IF NOT EXISTS demo_pedidos_creado_idx ON demo_pedidos (creado_en DESC);
+CREATE INDEX IF NOT EXISTS demo_pedido_lineas_pedido_idx ON demo_pedido_lineas (pedido_id);
+CREATE INDEX IF NOT EXISTS demo_mensajes_pedido_idx ON demo_mensajes (pedido_id);

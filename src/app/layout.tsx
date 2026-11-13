@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import "./site.css";
 
 export const metadata: Metadata = {
@@ -28,8 +27,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <div className="demo-strip">
+          MODO DEMO · pagos y mensajes simulados · datos ficticios
+        </div>
         {children}
-        <Script src="/assets/js/app.js?v=4" strategy="afterInteractive" />
       </body>
     </html>
   );

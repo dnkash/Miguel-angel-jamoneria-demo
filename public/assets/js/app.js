@@ -18,7 +18,7 @@
   const state = { productos: [], categorias: [], filtro: null };
   const acordeon = $("#catAccordion");
   let catAbierta = null;
-  const WA_NUMERO = "34600000000"; // ← sustituir por el número real del puesto
+  const LAST_KEY = "maj_last_order";
 
   /* ───────── reveal al hacer scroll ───────── */
   const io = new IntersectionObserver(
@@ -182,6 +182,47 @@
     guardar();
   }
 
+  function pintarUltimoPedido() {
+    const box = $("#lastOrder");
+    if (!box) return;
+
+    let last = null;
+    try {
+      last = JSON.parse(localStorage.getItem(LAST_KEY) || "null");
+    } catch (_) {
+      last = null;
+    }
+
+    if (!last || !last.token) {
+      box.hidden = true;
+      box.innerHTML = "";
+      return;
+    }
+
+    const render = (estado) => {
+      box.innerHTML = `<a href="/pedido/${encodeURIComponent(last.token)}">
+        <span>Último pedido</span>
+        <b>${esc(last.numero)}</b>
+        <i>${esc(estado || last.estado || "En preparación")}</i>
+      </a>`;
+    };
+
+    box.hidden = false;
+    render(last.estado);
+
+    fetch(`/api/pedidos/${encodeURIComponent(last.token)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d || !d.estado) return;
+        last.estado = d.estado;
+        try {
+          localStorage.setItem(LAST_KEY, JSON.stringify(last));
+        } catch (_) {}
+        render(d.estado);
+      })
+      .catch(() => {});
+  }
+
   function aplicarPedido(items) {
     let added = 0;
     items.forEach((item) => {
@@ -204,6 +245,7 @@
     veil.hidden = !open;
     requestAnimationFrame(() => veil.classList.toggle("is-open", open));
     document.body.style.overflow = open ? "hidden" : "";
+    if (open) pintarUltimoPedido();
   }
   $("#openCart").addEventListener("click", () => abrirCesta(true));
   $("#closeCart").addEventListener("click", () => abrirCesta(false));
@@ -235,18 +277,8 @@
   }
 
   $("#checkout").addEventListener("click", () => {
-    const lineas = Object.entries(cart)
-      .map(([slug, q]) => {
-        const p = porSlug(slug);
-        return p ? `• ${q} × ${p.nombre} — ${money(p.precio_cent * q)}` : "";
-      })
-      .filter(Boolean);
-    if (!lineas.length) return;
-    const texto =
-      `Hola, quiero hacer este pedido en Miguel Ángel Jamonería:\n\n` +
-      lineas.join("\n") +
-      `\n\nTotal: ${money(subtotal())}\nEnvío a península 24-48 h.`;
-    window.open(`https://wa.me/${WA_NUMERO}?text=${encodeURIComponent(texto)}`, "_blank", "noopener");
+    if (totalUnidades() === 0) return;
+    window.location.href = "/checkout";
   });
 
   /* ───────── render catálogo ───────── */
@@ -655,5 +687,6 @@
   /* ───────── arranque ───────── */
   $("#year").textContent = String(new Date().getFullYear());
   pintarContador(false);
+  pintarUltimoPedido();
   cargarCatalogo();
 })();
