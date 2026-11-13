@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/db'
-import { demoMensajes, demoPedidos } from '@/db/schema'
+import { demoMensajes, demoPedidoLineas, demoPedidos, productos } from '@/db/schema'
 import { isAdmin } from '@/lib/admin-auth'
 import { COMPANY, ESTADO_LABEL, type EstadoPedido } from '@/data/company'
 
@@ -104,6 +104,20 @@ export async function PATCH(
   }
 
   await db.update(demoPedidos).set(cambios).where(eq(demoPedidos.id, pedidoId))
+
+  if (parsed.data.estado === 'cancelado' && pedido.estado !== 'cancelado') {
+    const lineas = await db
+      .select()
+      .from(demoPedidoLineas)
+      .where(eq(demoPedidoLineas.pedidoId, pedidoId))
+
+    for (const linea of lineas) {
+      await db
+        .update(productos)
+        .set({ stock: sql`${productos.stock} + ${linea.cantidad}` })
+        .where(eq(productos.slug, linea.productoSlug))
+    }
+  }
 
   if (parsed.data.estado) {
     const plantilla = mensaje(

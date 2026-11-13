@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { db } from '@/db'
 import { demoPedidoLineas, demoPedidos, productos } from '@/db/schema'
 import { isAdmin } from '@/lib/admin-auth'
@@ -9,7 +9,15 @@ export async function POST() {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
 
-  const lineas = await db.select().from(demoPedidoLineas)
+  const lineas = await db
+    .select({
+      cantidad: demoPedidoLineas.cantidad,
+      productoSlug: demoPedidoLineas.productoSlug,
+    })
+    .from(demoPedidoLineas)
+    .innerJoin(demoPedidos, eq(demoPedidoLineas.pedidoId, demoPedidos.id))
+    .where(sql`${demoPedidos.estado} <> 'cancelado'`)
+
   const [antes] = await db.select({ n: sql<number>`count(*)::int` }).from(demoPedidos)
 
   for (const linea of lineas) {
