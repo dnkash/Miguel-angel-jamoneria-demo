@@ -16,13 +16,13 @@ const USERS: Array<AdminSession & { password: () => string }> = [
     username: 'empleado',
     nombre: 'Empleado',
     rol: 'empleado',
-    password: () => process.env.EMPLEADO_PASSWORD ?? 'empleado123',
+    password: () => process.env.EMPLEADO_PASSWORD ?? '',
   },
   {
     username: 'encargado',
     nombre: 'Encargado',
     rol: 'encargado',
-    password: () => process.env.ENCARGADO_PASSWORD ?? 'encargado123',
+    password: () => process.env.ENCARGADO_PASSWORD ?? '',
   },
 ]
 
@@ -37,7 +37,8 @@ function sign(value: string) {
 export function authenticate(username: string, password: string): AdminSession | null {
   const user = USERS.find((u) => u.username === username.trim().toLowerCase())
   if (!user) return null
-  if (user.password() !== password) return null
+  const expected = user.password()
+  if (!expected || expected !== password) return null
   return { username: user.username, nombre: user.nombre, rol: user.rol }
 }
 

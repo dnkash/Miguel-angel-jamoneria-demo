@@ -18,10 +18,10 @@ Guía para probar la demo y exponerla el martes.
 
 | Usuario | Contraseña | Rol |
 |---|---|---|
-| `empleado` | `empleado123` | Prepara pedidos, cambia estados y añade notas |
-| `encargado` | `encargado123` | Todo lo anterior + cancelar pedidos + reset demo |
+| `empleado` | Facilitada por el responsable | Prepara pedidos, cambia estados y añade notas |
+| `encargado` | Facilitada por el responsable | Todo lo anterior + cancelar pedidos + reset demo |
 
-> Cambia estas claves con `EMPLEADO_PASSWORD` y `ENCARGADO_PASSWORD` si publicas la demo fuera del aula.
+> Las contraseñas se configuran con `EMPLEADO_PASSWORD` y `ENCARGADO_PASSWORD`. No se muestran en la web ni se guardan en el repositorio.
 
 ---
 
@@ -88,7 +88,7 @@ Guía para probar la demo y exponerla el martes.
 
 ### 3.3 Empleado: preparar pedidos
 
-1. Entra en `/login` con `empleado` / `empleado123`.
+1. Entra en `/login` con el usuario `empleado` y la contraseña facilitada.
 2. Abre **Pedidos**.
 3. Abre un pedido pendiente.
 4. Pulsa **En preparación**, luego **Listo**, **Enviado** y **Entregado**.
@@ -104,7 +104,7 @@ Guía para probar la demo y exponerla el martes.
 
 ### 3.4 Encargado: permisos y reset
 
-1. Cierra sesión y entra con `encargado` / `encargado123`.
+1. Cierra sesión y entra con el usuario `encargado` y la contraseña facilitada.
 2. Abre un pedido pendiente.
 3. Verás el botón **Cancelado**, que el empleado no tiene.
 4. Cancela un pedido de prueba y comprueba que el stock vuelve.

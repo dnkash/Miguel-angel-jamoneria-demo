@@ -28,12 +28,6 @@ export function LoginForm() {
     }
   }
 
-  const rellenar = (usuario: string, clave: string) => {
-    setUsername(usuario)
-    setPassword(clave)
-    setError('')
-  }
-
   return (
     <div className="admin-login">
       <form className="admin-login__card" onSubmit={entrar}>
@@ -74,17 +68,7 @@ export function LoginForm() {
           <span>{loading ? 'Entrando…' : 'Entrar'}</span>
         </button>
 
-        <div className="admin-login__accounts">
-          <button type="button" onClick={() => rellenar('empleado', 'empleado123')}>
-            <b>Empleado</b>
-            <span>empleado123</span>
-          </button>
-          <button type="button" onClick={() => rellenar('encargado', 'encargado123')}>
-            <b>Encargado</b>
-            <span>encargado123</span>
-          </button>
-        </div>
-
+        <p className="admin-login__hint">Credenciales facilitadas por el responsable.</p>
         <p className="admin-login__hint"><Link href="/">← Volver a la tienda</Link></p>
       </form>
     </div>
